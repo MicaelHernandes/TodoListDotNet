@@ -4,11 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using TodoListDotNet.Infra.Context;
+using TodoListDotNet.Infra.Repositories.Task;
 using TodoListDotNet.Infra.Repositories.User;
 using TodoListDotNet.Mapping;
 using TodoListDotNet.Models;
 using TodoListDotNet.Services;
 using TodoListDotNet.Services.Auth;
+using TodoListDotNet.Services.Task;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
