@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TodoListDotNet.DTOs;
 using TodoListDotNet.DTOs.Requests;
+using TodoListDotNet.DTOs.Responses;
 using TodoListDotNet.Services.Auth;
 
 namespace TodoListDotNet.Controllers
@@ -22,11 +24,11 @@ namespace TodoListDotNet.Controllers
             try
             {
                 var token = await _authService.Login(request.Email, request.Password);
-                return Ok(token);
+                return Ok(new ApiResponse<object>(new { token = token }, "Login bem-sucedido"));
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new ApiResponse<string>("Erro ao logar", e.Message));
             }
         }
         
@@ -36,11 +38,11 @@ namespace TodoListDotNet.Controllers
             try
             {
                 var user = await _authService.Register(request.Name, request.Email, request.Password);
-                return Ok(user);
+                return Created("/",new ApiResponse<UserDTO>(user, "Registro cadastrado com sucesso"));
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new ApiResponse<string>("Erro ao registro", e.Message));
             }
         }
     }
