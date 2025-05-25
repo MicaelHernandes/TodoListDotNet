@@ -7,7 +7,7 @@ namespace TodoListDotNet.Services;
 
 public class TokenService
 {
-    public static object GenerateToken(User user)
+    public object GenerateToken(User user)
     {
         var key = Encoding.ASCII.GetBytes(Key.Secret);
         var tokenConfig = new SecurityTokenDescriptor
