@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using TodoListDotNet.DTOs;
 using TodoListDotNet.Infra.Repositories.User;
 using TodoListDotNet.Models;
 
@@ -8,11 +10,13 @@ public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly TokenService _tokenService;
+    private readonly IMapper _mapper;
     
-    public AuthService(IUserRepository userRepository, TokenService tokenService)
+    public AuthService(IUserRepository userRepository, TokenService tokenService , IMapper mapper)
     {
         _userRepository = userRepository;
         _tokenService = tokenService;
+        _mapper = mapper;
     }
     
     public async Task<object> Login(string email, string password)
@@ -43,7 +47,7 @@ public class AuthService : IAuthService
         }
     }
 
-    public async Task<object> Register(string name, string email, string password)
+    public async Task<UserDTO> Register(string name, string email, string password)
     {
         try
         {
@@ -57,7 +61,7 @@ public class AuthService : IAuthService
             var passwordHasher = new PasswordHasher<User>();
             user.Password = passwordHasher.HashPassword(user, password);
             var result = await _userRepository.addUser(user);
-            return result;
+            return _mapper.Map<UserDTO>(result);
         }
         catch (Exception e)
         {

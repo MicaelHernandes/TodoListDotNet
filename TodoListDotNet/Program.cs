@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using TodoListDotNet.Infra.Context;
 using TodoListDotNet.Infra.Repositories.User;
+using TodoListDotNet.Mapping;
 using TodoListDotNet.Models;
 using TodoListDotNet.Services;
 using TodoListDotNet.Services.Auth;
@@ -21,6 +22,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenService>();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddSwaggerGen(c =>
 {
