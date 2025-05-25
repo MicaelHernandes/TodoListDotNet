@@ -19,7 +19,7 @@ public class AuthService : IAuthService
         _mapper = mapper;
     }
     
-    public async Task<object> Login(string email, string password)
+    public async Task<string> Login(string email, string password)
     {
         try
         {

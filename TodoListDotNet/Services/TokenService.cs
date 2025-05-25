@@ -1,31 +1,38 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using TodoListDotNet.Models;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace TodoListDotNet.Services;
 
-public class TokenService
+public sealed class TokenService(IConfiguration configuration)
 {
-    public object GenerateToken(User user)
+    public string GenerateToken(User user)
     {
-        var key = Encoding.ASCII.GetBytes(Key.Secret);
-        var tokenConfig = new SecurityTokenDescriptor
+        string secretKey = configuration["Jwt:Secret"];
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+        
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        
+        var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new System.Security.Claims.ClaimsIdentity(new[]
-            {
-                new System.Security.Claims.Claim("id", user.Id.ToString()),
-                new System.Security.Claims.Claim("name", user.Name),
-                new System.Security.Claims.Claim("email", user.Mail)
-            }),
-            Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            Subject = new ClaimsIdentity(
+            [
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Name, user.Name),
+                new Claim(JwtRegisteredClaimNames.Email, user.Mail)
+            ]),
+            NotBefore = DateTime.UtcNow,
+            Expires = DateTime.UtcNow.AddMinutes(configuration.GetValue<int>("Jwt:ExpirationInMinutes")),
+            SigningCredentials = credentials,
+            Issuer = configuration["Jwt:Issuer"],
+            Audience = configuration["Jwt:Audience"],
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenConfig);
-        var tokenString = tokenHandler.WriteToken(token);
-        return new { token, tokenString };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
     }
 }
