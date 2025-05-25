@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TodoListDotNet.Models;
+using Task = TodoListDotNet.Models.Task;
 
 namespace TodoListDotNet.Infra.Context;
 
@@ -8,4 +10,7 @@ public class AppDbContext: DbContext
         : base(options)
     {
     }
+    
+    DbSet<Task> Tasks { get; set; }
+    DbSet<User> Users { get; set; }
 }
