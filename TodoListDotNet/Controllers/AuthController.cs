@@ -29,5 +29,19 @@ namespace TodoListDotNet.Controllers
                 return BadRequest(e.Message);
             }
         }
+        
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] AuthRegisterRequest request)
+        {
+            try
+            {
+                var user = await _authService.Register(request.Name, request.Email, request.Password);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

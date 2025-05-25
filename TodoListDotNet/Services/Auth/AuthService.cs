@@ -43,8 +43,26 @@ public class AuthService : IAuthService
         }
     }
 
-    public Task<object> Register(string email, string password)
+    public async Task<object> Register(string name, string email, string password)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var user = new User
+            {
+                Name = name,
+                Mail = email,
+                Password = password
+            };
+            
+            var passwordHasher = new PasswordHasher<User>();
+            user.Password = passwordHasher.HashPassword(user, password);
+            var result = await _userRepository.addUser(user);
+            return result;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }
