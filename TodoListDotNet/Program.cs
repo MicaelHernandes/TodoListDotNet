@@ -60,7 +60,7 @@ builder.Services.AddSwaggerGen(c =>
     
 });
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=/tmp/TodoListDotNet.db"));
 builder.Services.AddSingleton<TokenService>();
 
 builder.Services.AddAuthorization();
@@ -79,6 +79,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
